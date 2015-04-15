@@ -89,6 +89,17 @@ class EntityFetchByField extends RulesActionBase implements ContainerFactoryPlug
   /**
    * {@inheritdoc}
    */
+  public function getProvidedContextDefinitions() {
+    $provided_definitons = parent::getProvidedContextDefinitions();
+    if ($type = $this->getContext('type')->getContextValue()) {
+      $provided_definitons['entity_fetched']->setDataType("entity:$type");
+    }
+    return $provided_definitons;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function summary() {
     return $this->t('Fetch entities by field');
   }
