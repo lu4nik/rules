@@ -13,7 +13,7 @@ use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
  * @coversDefaultClass \Drupal\rules\Plugin\Action\UserUnBlock
  * @group rules_actions
  */
-class UserUnBlockTest extends RulesEntityIntegrationTestBase {
+class UserUnblockTest extends RulesEntityIntegrationTestBase {
 
   /**
    * Constant used for authenticated test when mocking a user.
@@ -72,15 +72,10 @@ class UserUnBlockTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testUnBlockUserWithValidUser() {
+  public function testUnblockUserWithValidUser() {
     $user = $this->getUserMock(self::BLOCKED, self::AUTHENTICATED);
-
     $user->expects($this->once())
       ->method('activate');
-
-    $user->expects($this->once())
-      ->method('id')
-      ->willReturn('123');
 
     $this->action->setContextValue('user', $user);
 
@@ -92,7 +87,7 @@ class UserUnBlockTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testUnBlockUserWithActiveAnonymousUser() {
+  public function testUnblockUserWithActiveAnonymousUser() {
     $user = $this->getUserMock(self::ACTIVE, self::ANONYMOUS);
 
     $user->expects($this->never())
@@ -109,7 +104,7 @@ class UserUnBlockTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testUnBlockUserWithActiveAuthenticatedUser() {
+  public function testUnblockUserWithActiveAuthenticatedUser() {
     $user = $this->getUserMock(self::ACTIVE, self::AUTHENTICATED);
 
     $user->expects($this->never())
@@ -125,14 +120,11 @@ class UserUnBlockTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testUnBlockUserWithBlockedAnonymousUser() {
+  public function testUnblockUserWithBlockedAnonymousUser() {
     $user = $this->getUserMock(self::BLOCKED, self::ANONYMOUS);
 
     $user->expects($this->never())
-      ->method('block');
-
-//    $this->sessionManager->expects($this->never())
-//      ->method('delete');
+      ->method('activate');
 
     $this->action->setContextValue('user', $user);
 
@@ -153,11 +145,16 @@ class UserUnBlockTest extends RulesEntityIntegrationTestBase {
   protected function getUserMock($active, $authenticated) {
     $user = $this->getMock('Drupal\user\UserInterface');
 
-    $user->expects($this->any())
-      ->method('isActive')
-      ->willReturn($active);
+      $user->expects($this->any())
+          ->method('isActive')
+          ->willReturn($active);
 
-    $user->expects($this->any())
+      $user->expects($this->any())
+          ->method('isBlocked')
+          ->willReturn(!$active);
+
+
+      $user->expects($this->any())
       ->method('isAuthenticated')
       ->willReturn($authenticated);
 
