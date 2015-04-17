@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\Tests\rules\Integration\Action\UserUnBlockTest.
+ * Contains \Drupal\Tests\rules\Integration\Action\UserUnblockTest.
  */
 
 namespace Drupal\Tests\rules\Integration\Action;
@@ -10,7 +10,7 @@ namespace Drupal\Tests\rules\Integration\Action;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
- * @coversDefaultClass \Drupal\rules\Plugin\Action\UserUnBlock
+ * @coversDefaultClass \Drupal\rules\Plugin\Action\UserUnblock
  * @group rules_actions
  */
 class UserUnblockTest extends RulesEntityIntegrationTestBase {
@@ -42,20 +42,17 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
    */
   protected $action;
 
-
   /**
+   * Test execute() method for users with different status.
    * @dataProvider userProvider
    * @covers ::execute
    */
   public function testUnblockUser($active, $authenticated, $expects) {
     $user = $this->getMock('Drupal\user\UserInterface');
 
-    $user = $this->getMock('Drupal\user\UserInterface');
-
     $user->expects($this->any())
       ->method('isBlocked')
       ->willReturn(!$active);
-
 
     $user->expects($this->any())
       ->method('isAuthenticated')

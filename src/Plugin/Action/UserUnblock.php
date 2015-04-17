@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Plugin\Action\UserUnBlock.
+ * Contains \Drupal\rules\Plugin\Action\UserUnblock.
  */
 
 namespace Drupal\rules\Plugin\Action;
@@ -29,7 +29,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @todo: Add access callback information from Drupal 7.
  */
-class UserUnBlock extends RulesActionBase {
+class UserUnblock extends RulesActionBase {
 
     /**
      * {@inheritdoc}
