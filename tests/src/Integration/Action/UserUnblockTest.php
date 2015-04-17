@@ -42,12 +42,6 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
    */
   protected $action;
 
-  /**
-   * The mocked session manager.
-   *
-   * @var \PHPUnit_Framework_MockObject_MockObject|\Drupal\Core\Session\SessionManagerInterface
-   */
-  protected $sessionManager;
 
   /**
    * @dataProvider userProvider
