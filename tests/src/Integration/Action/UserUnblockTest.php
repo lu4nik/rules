@@ -50,6 +50,48 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
   protected $sessionManager;
 
   /**
+   * @dataProvider userProvider
+   * @covers ::execute
+   */
+  public function testUnblockUser($active, $authenticated, $expects) {
+    $user = $this->getMock('Drupal\user\UserInterface');
+
+    $user = $this->getMock('Drupal\user\UserInterface');
+
+    $user->expects($this->any())
+      ->method('isActive')
+      ->willReturn($active);
+
+    $user->expects($this->any())
+      ->method('isBlocked')
+      ->willReturn(!$active);
+
+
+    $user->expects($this->any())
+      ->method('isAuthenticated')
+      ->willReturn($authenticated);
+
+    $user->expects($this->{$expects}())
+      ->method('activate');
+
+    $this->action->setContextValue('user', $user);
+
+    $this->action->execute();
+  }
+
+  /**
+   * Data provider for ::testUnblockUser.
+   */
+  public function userProvider() {
+    return [
+      [self::BLOCKED, self::AUTHENTICATED, 'once'],
+      [self::ACTIVE, self::ANONYMOUS, 'never'],
+      [self::ACTIVE, self::AUTHENTICATED, 'never'],
+      [self::BLOCKED, self::ANONYMOUS, 'never'],
+    ];
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function setUp() {
@@ -65,100 +107,6 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
    */
   public function testSummary() {
     $this->assertEquals('Unblock a user', $this->action->summary());
-  }
-
-  /**
-   * Test execute() method for active and authenticated users.
-   *
-   * @covers ::execute
-   */
-  public function testUnblockUserWithValidUser() {
-    $user = $this->getUserMock(self::BLOCKED, self::AUTHENTICATED);
-    $user->expects($this->once())
-      ->method('activate');
-
-    $this->action->setContextValue('user', $user);
-
-    $this->action->execute();
-  }
-
-  /**
-   * Test execute() method for active and anonymous users.
-   *
-   * @covers ::execute
-   */
-  public function testUnblockUserWithActiveAnonymousUser() {
-    $user = $this->getUserMock(self::ACTIVE, self::ANONYMOUS);
-
-    $user->expects($this->never())
-      ->method('activate');
-
-    $this->action->setContextValue('user', $user);
-
-    $this->action->execute();
-  }
-
-
-  /**
-   * Test execute() method for blocked and authenticated users.
-   *
-   * @covers ::execute
-   */
-  public function testUnblockUserWithActiveAuthenticatedUser() {
-    $user = $this->getUserMock(self::ACTIVE, self::AUTHENTICATED);
-
-    $user->expects($this->never())
-      ->method('activate');
-
-    $this->action->setContextValue('user', $user);
-
-    $this->action->execute();
-  }
-
-  /**
-   * Test execute() method for blocked and anonymous users.
-   *
-   * @covers ::execute
-   */
-  public function testUnblockUserWithBlockedAnonymousUser() {
-    $user = $this->getUserMock(self::BLOCKED, self::ANONYMOUS);
-
-    $user->expects($this->never())
-      ->method('activate');
-
-    $this->action->setContextValue('user', $user);
-
-    $this->action->execute();
-  }
-
-  /**
-   * Creates a mock user.
-   *
-   * @param bool $active
-   *   Is user activated.
-   * @param bool $authenticated
-   *   Is user authenticated.
-   *
-   * @return \PHPUnit_Framework_MockObject_MockObject|\Drupal\user\UserInterface
-   *   The mocked user object.
-   */
-  protected function getUserMock($active, $authenticated) {
-    $user = $this->getMock('Drupal\user\UserInterface');
-
-      $user->expects($this->any())
-          ->method('isActive')
-          ->willReturn($active);
-
-      $user->expects($this->any())
-          ->method('isBlocked')
-          ->willReturn(!$active);
-
-
-      $user->expects($this->any())
-      ->method('isAuthenticated')
-      ->willReturn($authenticated);
-
-    return $user;
   }
 
 }
