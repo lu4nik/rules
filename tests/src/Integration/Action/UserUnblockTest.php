@@ -53,10 +53,6 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
     $user = $this->getMock('Drupal\user\UserInterface');
 
     $user->expects($this->any())
-      ->method('isActive')
-      ->willReturn($active);
-
-    $user->expects($this->any())
       ->method('isBlocked')
       ->willReturn(!$active);
 
@@ -78,9 +74,13 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
    */
   public function userProvider() {
     return [
+      // For blocked authenticated user.
       [self::BLOCKED, self::AUTHENTICATED, 'once'],
+      // For active anonymous user.
       [self::ACTIVE, self::ANONYMOUS, 'never'],
+      // For active authenticated user.
       [self::ACTIVE, self::AUTHENTICATED, 'never'],
+      // For blocked anonymous user.
       [self::BLOCKED, self::ANONYMOUS, 'never'],
     ];
   }
