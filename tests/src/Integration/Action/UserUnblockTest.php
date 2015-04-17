@@ -110,4 +110,3 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
   }
 
 }
-
