@@ -74,13 +74,13 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
    */
   public function userProvider() {
     return [
-      // For blocked authenticated user.
+      // Test blocked authenticated user.
       [self::BLOCKED, self::AUTHENTICATED, 'once'],
-      // For active anonymous user.
+      // Test active anonymous user.
       [self::ACTIVE, self::ANONYMOUS, 'never'],
-      // For active authenticated user.
+      // Test active authenticated user.
       [self::ACTIVE, self::AUTHENTICATED, 'never'],
-      // For blocked anonymous user.
+      // Test blocked anonymous user.
       [self::BLOCKED, self::ANONYMOUS, 'never'],
     ];
   }
