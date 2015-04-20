@@ -43,46 +43,6 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
   protected $action;
 
   /**
-   * Test execute() method for users with different status.
-   * @dataProvider userProvider
-   * @covers ::execute
-   */
-  public function testUnblockUser($active, $authenticated, $expects) {
-    $user = $this->getMock('Drupal\user\UserInterface');
-
-    $user->expects($this->any())
-      ->method('isBlocked')
-      ->willReturn(!$active);
-
-    $user->expects($this->any())
-      ->method('isAuthenticated')
-      ->willReturn($authenticated);
-
-    $user->expects($this->{$expects}())
-      ->method('activate');
-
-    $this->action->setContextValue('user', $user);
-
-    $this->action->execute();
-  }
-
-  /**
-   * Data provider for ::testUnblockUser.
-   */
-  public function userProvider() {
-    return [
-      // Test blocked authenticated user.
-      [self::BLOCKED, self::AUTHENTICATED, 'once'],
-      // Test active anonymous user.
-      [self::ACTIVE, self::ANONYMOUS, 'never'],
-      // Test active authenticated user.
-      [self::ACTIVE, self::AUTHENTICATED, 'never'],
-      // Test blocked anonymous user.
-      [self::BLOCKED, self::ANONYMOUS, 'never'],
-    ];
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function setUp() {
@@ -98,6 +58,53 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
    */
   public function testSummary() {
     $this->assertEquals('Unblock a user', $this->action->summary());
+  }
+
+  /**
+   * Test execute() method for users with different status.
+   * @dataProvider userProvider
+   * @covers ::execute
+   */
+  public function testUnblockUser($active, $authenticated, $expects, $context_name) {
+    // Set-up a mock user.
+    $account = $this->getMock('Drupal\user\UserInterface');
+    // Mock isBlocked.
+    $account->expects($this->any())
+      ->method('isBlocked')
+      ->willReturn(!$active);
+    // Mock isAuthenticated.
+    $account->expects($this->any())
+      ->method('isAuthenticated')
+      ->willReturn($authenticated);
+    // Mock activate.
+    $account->expects($this->{$expects}())
+      ->method('activate');
+    // We do noe expect call of the 'save' method because user should be
+    // auto-saved later.
+    $account->expects($this->never())
+      ->method('save');
+    // Test unblocking the user.
+    $this->action
+      ->setContextValue('user', $account)
+      ->execute();
+
+    $this->assertEquals($this->action->autoSaveContext(), $context_name, 'Action returns correct context name for auto saving.');
+  }
+
+  /**
+   * Data provider for ::testUnblockUser.
+   */
+  public function userProvider() {
+    return [
+      // Test blocked authenticated user.
+      [self::BLOCKED, self::AUTHENTICATED, 'once', ['user']],
+      // Test active anonymous user.
+      [self::ACTIVE, self::ANONYMOUS, 'never', []],
+      // Test active authenticated user.
+      [self::ACTIVE, self::AUTHENTICATED, 'never', []],
+      // Test blocked anonymous user.
+      [self::BLOCKED, self::ANONYMOUS, 'never', []],
+    ];
   }
 
 }

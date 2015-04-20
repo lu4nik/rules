@@ -30,27 +30,43 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @todo: Add access callback information from Drupal 7.
  */
 class UserUnblock extends RulesActionBase {
+  /**
+   * Flag that indicates if the entity should be auto-saved later.
+   *
+   * @var bool
+   */
+  protected $saveLater = FALSE;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function summary() {
-        return $this->t('Unblock a user');
+  /**
+   * {@inheritdoc}
+   */
+  public function summary() {
+    return $this->t('Unblock a user');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function execute() {
+    /** @var $user \Drupal\user\UserInterface */
+    $user = $this->getContextValue('user');
+
+    // Do nothing if user is anonymous or isn't blocked.
+    if ($user->isAuthenticated() && $user->isBlocked()) {
+      $user->activate();
+      // Set flag that indicates if the entity should be auto-saved later.
+      $this->saveLater = TRUE;
     }
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function execute() {
-        /**
-         * @var $user \Drupal\user\UserInterface
-         */
-        $user = $this->getContextValue('user');
-
-        // Do nothing if user is anonymous or isn't blocked.
-        if ($user->isAuthenticated() && $user->isBlocked()) {
-            $user->activate();
-        }
+  /**
+   * {@inheritdoc}
+   */
+  public function autoSaveContext() {
+    if ($this->saveLater) {
+      return ['user'];
     }
+    return [];
+  }
 
 }
